@@ -14,11 +14,15 @@ const adminController = {
       )
       .catch(err => next(err))
   },
-  createRestaurants: (req, res) => {
-    res.render('admin/create-restaurant')
+  createRestaurants: (req, res, next) => {
+    Category.findAll({
+      raw: true
+    })
+      .then(categories => res.render('admin/create-restaurant', { categories }))
+      .catch(err => next(err))
   },
   postRestaurants: (req, res, next) => {
-    const { name, tel, address, openingHours, description } = req.body
+    const { name, tel, address, openingHours, description, categoryId } = req.body
     if (!name) throw new Error('Restaurant name is required!')
 
     const { file } = req
@@ -31,7 +35,8 @@ const adminController = {
           address,
           openingHours,
           description,
-          image: filePath || null
+          image: filePath || null,
+          categoryId
         })
       })
       .then(() => {
@@ -54,17 +59,19 @@ const adminController = {
       .catch(err => next(err))
   },
   editRestaurant: (req, res, next) => {
-    Restaurant.findByPk(req.params.id, {
-      raw: true
-    })
-      .then(restaurant => {
+    Promise.all([
+      Restaurant.findByPk(req.params.id, { raw: true }),
+      Category.findAll({ raw: true })
+    ])
+      .then(([restaurant, categories]) => {
         if (!restaurant) throw new Error("Restaurant didn't exist!")
-        res.render('admin/edit-restaurant', { restaurant })
+
+        res.render('admin/edit-restaurant', { restaurant, categories })
       })
       .catch(err => next(err))
   },
   putRestaurant: (req, res, next) => {
-    const { name, tel, address, openingHours, description } = req.body
+    const { name, tel, address, openingHours, description, categoryId } = req.body
     if (!name) throw new Error('Restaurant name is required!')
 
     const { file } = req
@@ -80,7 +87,8 @@ const adminController = {
         address,
         openingHours,
         description,
-        image: filePath || restaurant.image
+        image: filePath || restaurant.image,
+        categoryId
       })
     })
       .then(() => {
