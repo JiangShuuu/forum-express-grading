@@ -1,4 +1,4 @@
-const { Restaurant } = require('../models')
+const { Restaurant, Category } = require('../models')
 // const { localFileHandler } = require('../helpers/file-helper')
 const { imgurFileHandler } = require('../helpers/file-helper')
 
@@ -6,7 +6,9 @@ const adminController = {
   getRestaurants: (req, res, next) => {
     Restaurant.findAll({
       // 若沒raw會拿到sequelize物件
-      raw: true
+      raw: true,
+      nest: true,
+      include: [Category]
     })
       .then(restaurants => res.render('admin/restaurants', { restaurants })
       )
@@ -40,7 +42,9 @@ const adminController = {
   },
   getRestaurant: (req, res, next) => {
     Restaurant.findByPk(req.params.id, {
-      raw: true
+      raw: true,
+      nest: true,
+      include: [Category]
     })
       .then(restaurant => {
         if (!restaurant) throw new Error("Restaurant didn't exist")
