@@ -1,18 +1,11 @@
 const { Restaurant, Category } = require('../../models')
 // const { localFileHandler } = require('../helpers/file-helper')
+const adminServices = require('../../services/admin-services')
 const { imgurFileHandler } = require('../../helpers/file-helper')
 
 const adminController = {
   getRestaurants: (req, res, next) => {
-    Restaurant.findAll({
-      // 若沒raw會拿到sequelize物件
-      raw: true,
-      nest: true,
-      include: [Category]
-    })
-      .then(restaurants => res.render('admin/restaurants', { restaurants })
-      )
-      .catch(err => next(err))
+    adminServices.getRestaurants(req, (err, data) => err ? next(err) : res.render('admin/restaurants', data))
   },
   createRestaurants: (req, res, next) => {
     Category.findAll({
@@ -98,13 +91,7 @@ const adminController = {
       .catch(err => next(err))
   },
   deleteRestaurant: (req, res, next) => {
-    return Restaurant.findByPk(req.params.id)
-      .then(restaurant => {
-        if (!restaurant) throw new Error("Restaurant didn't exist!")
-        return restaurant.destroy()
-      })
-      .then(() => res.redirect('/admin/restaurants'))
-      .catch(err => next(err))
+    adminServices.deleteRestaurant(req, (err, data) => err ? next(err) : res.redirect('/admin/restaurants'))
   }
 }
 module.exports = adminController
