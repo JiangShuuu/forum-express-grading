@@ -39,6 +39,30 @@ const adminController = {
       })
       .then(() => cb(null))
       .catch(err => cb(err))
+  },
+  putRestaurant: (req, cb) => {
+    const { name, tel, address, openingHours, description, categoryId } = req.body
+    if (!name) throw new Error('Restaurant name is required!')
+
+    const { file } = req
+
+    Promise.all([
+      Restaurant.findByPk(req.params.id),
+      imgurFileHandler(file)
+    ]).then(([restaurant, filePath]) => {
+      if (!restaurant) throw new Error("Restaurant didn't exist!")
+      return restaurant.update({
+        name,
+        tel,
+        address,
+        openingHours,
+        description,
+        image: filePath || restaurant.image,
+        categoryId
+      })
+    })
+      .then(upRestaurant => cb(null, { restaurant: upRestaurant }))
+      .catch(err => cb(err))
   }
 }
 

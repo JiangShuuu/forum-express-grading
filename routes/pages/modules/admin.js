@@ -8,10 +8,13 @@ const upload = require('../../../middleware/multer')
 router.get('/restaurants/create', adminController.createRestaurants)
 router.get('/restaurants/:id/edit', adminController.editRestaurant)
 router.get('/restaurants/:id', adminController.getRestaurant)
+
+// 已完成
 router.put('/restaurants/:id', upload.single('image'), adminController.putRestaurant)
 router.delete('/restaurants/:id', adminController.deleteRestaurant)
 router.get('/restaurants', adminController.getRestaurants)
 router.post('/restaurants', upload.single('image'), adminController.postRestaurants)
+
 router.get('/categories/:id', categoryController.getCategories)
 router.put('/categories/:id', categoryController.putCategory)
 router.delete('/categories/:id', categoryController.deleteCategory)
