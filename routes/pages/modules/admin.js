@@ -6,9 +6,9 @@ const categoryController = require('../../../controllers/pages/category-controll
 const upload = require('../../../middleware/multer')
 
 router.get('/restaurants/create', adminController.createRestaurants)
-router.get('/restaurants/:id/edit', adminController.editRestaurant)
 
 // 已完成
+router.get('/restaurants/:id/edit', adminController.editRestaurant)
 router.get('/restaurants/:id', adminController.getRestaurant)
 router.put('/restaurants/:id', upload.single('image'), adminController.putRestaurant)
 router.delete('/restaurants/:id', adminController.deleteRestaurant)

@@ -72,6 +72,14 @@ const adminController = {
     })
       .then(restaurant => cb(null, { restaurant }))
       .catch(err => cb(err))
+  },
+  editRestaurant: (req, cb) => {
+    Promise.all([
+      Restaurant.findByPk(req.params.id, { raw: true }),
+      Category.findAll({ raw: true })
+    ])
+      .then(([restaurant, categories]) => cb(null, { restaurant, categories }))
+      .catch(err => cb(err))
   }
 }
 
