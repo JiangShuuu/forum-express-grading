@@ -63,6 +63,15 @@ const adminController = {
     })
       .then(upRestaurant => cb(null, { restaurant: upRestaurant }))
       .catch(err => cb(err))
+  },
+  getRestaurant: (req, cb) => {
+    Restaurant.findByPk(req.params.id, {
+      raw: true,
+      nest: true,
+      include: [Category]
+    })
+      .then(restaurant => cb(null, { restaurant }))
+      .catch(err => cb(err))
   }
 }
 
