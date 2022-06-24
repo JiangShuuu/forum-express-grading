@@ -1,4 +1,3 @@
-const { Category } = require('../../models')
 // const { localFileHandler } = require('../helpers/file-helper')
 const adminServices = require('../../services/admin-services')
 
@@ -7,11 +6,7 @@ const adminController = {
     adminServices.getRestaurants(req, (err, data) => err ? next(err) : res.render('admin/restaurants', data))
   },
   createRestaurants: (req, res, next) => {
-    Category.findAll({
-      raw: true
-    })
-      .then(categories => res.render('admin/create-restaurant', { categories }))
-      .catch(err => next(err))
+    adminServices.createRestaurants(req, (err, data) => err ? next(err) : res.render('admin/create-restaurant', data))
   },
   postRestaurants: (req, res, next) => {
     adminServices.postRestaurants(req, (err, data) => {

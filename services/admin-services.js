@@ -80,6 +80,13 @@ const adminController = {
     ])
       .then(([restaurant, categories]) => cb(null, { restaurant, categories }))
       .catch(err => cb(err))
+  },
+  createRestaurants: (req, cb) => {
+    Category.findAll({
+      raw: true
+    })
+      .then(categories => cb(null, { categories }))
+      .catch(err => cb(err))
   }
 }
 
