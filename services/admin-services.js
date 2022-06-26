@@ -95,6 +95,33 @@ const adminController = {
     ])
       .then(([categories, category]) => cb(null, { categories, category }))
       .catch(err => cb(err))
+  },
+  postCategory: (req, cb) => {
+    const { name } = req.body
+    if (!name) throw new Error('Category name is required!')
+    return Category.create({ name })
+      .then(() => cb(null))
+      .catch(err => cb(err))
+  },
+  putCategory: (req, cb) => {
+    const { name } = req.body
+    if (!name) throw new Error('Category name is required!')
+    return Category.findByPk(req.params.id)
+      .then(category => {
+        if (!category) throw new Error("Category doesn't exist!")
+        return category.update({ name })
+      })
+      .then(() => cb(null))
+      .catch(err => cb(err))
+  },
+  deleteCategory: (req, cd) => {
+    return Category.findByPk(req.params.id)
+      .then(category => {
+        if (!category) throw new Error("Category didn't exist!") // 反查，確認要刪除的類別存在，再進行下面刪除動作
+        return category.destroy()
+      })
+      .then(() => cd(null))
+      .catch(err => cd(err))
   }
 }
 
