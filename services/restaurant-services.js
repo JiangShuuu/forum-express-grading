@@ -1,4 +1,4 @@
-const { Restaurant, Category } = require('../models')
+const { Restaurant, Category, Comment, User } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const restaurantServices = {
   getRestaurants: (req, cb) => {
@@ -36,6 +36,63 @@ const restaurantServices = {
           pagination: getPagination(limit, page, restaurants.count)
         })
       })
+      .catch(err => cb(err))
+  },
+  getRestaurant: (req, cb) => {
+    return Restaurant.findByPk(req.params.id, {
+      include: [
+        Category,
+        { model: Comment, include: User },
+        { model: User, as: 'FavoritedUsers' },
+        { model: User, as: 'LikedUsers' }
+      ]
+    })
+      .then(restaurant => {
+        if (!restaurant) throw new Error("Restaurant didn't exist!")
+
+        return restaurant.increment('viewCounts')
+      })
+      .then(restaurant => {
+        const isFavorited = restaurant.FavoritedUsers.some(f => f.id === req.user.id)
+        const isLiked = restaurant.LikedUsers.some(lr => lr.id === req.user.id)
+        cb(null, {
+          restaurant: restaurant.toJSON(),
+          isFavorited,
+          isLiked
+        })
+      })
+      .catch(err => cb(err))
+  },
+  getDashboard: (req, cb) => {
+    return Restaurant.findByPk(req.params.id, {
+      include: Category,
+      nest: true,
+      raw: true
+    })
+      .then(restaurant => {
+        if (!restaurant) throw new Error("Restaurant didn't exist!")
+        cb(null, { restaurant })
+      })
+      .catch(err => cb(err))
+  },
+  getFeeds: (req, cb) => {
+    return Promise.all([
+      Restaurant.findAll({
+        limit: 10,
+        order: [['createdAt', 'DESC']],
+        include: [Category],
+        raw: true,
+        nest: true
+      }),
+      Comment.findAll({
+        limit: 10,
+        order: [['createdAt', 'DESC']],
+        include: [User, Restaurant],
+        raw: true,
+        nest: true
+      })
+    ])
+      .then(([restaurants, comments]) => cb(null, ({ restaurants, comments })))
       .catch(err => cb(err))
   }
 }
