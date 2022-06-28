@@ -17,7 +17,7 @@ const commentController = {
           restaurantId,
           userId
         })
-        cb(null, { user, restaurant })
+        cb(null)
       })
       .catch(err => cb(err))
   },
@@ -26,7 +26,7 @@ const commentController = {
       .then(comment => {
         if (!comment) throw new Error("Comment didn't exist!'")
         comment.destroy()
-        cb(null, { comment })
+        cb(null)
       })
       .catch(err => cb(err))
   }
